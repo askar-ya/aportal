@@ -157,7 +157,7 @@ class Flat:
             'price': self.price},
             type_obj='flat')
 
-        data = get_avito_page(location, refer, '2')
+        data = get_avito_page(location, refer, '1')
         return data
 
 
