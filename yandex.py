@@ -56,105 +56,119 @@ def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
 
     # фильтр цены
     if q['price'] is not None:
-        params['priceMin'] = q['price'][0]
+        if q['price'][0] != '0':
+            params['priceMin'] = q['price'][0]
         if len(q['price']) > 1:
             params['priceMax'] = q['price'][1]
 
     # указатель новостройки
-    if q['cycle'] != 'all':
-        if q['cycle'] == 'new':
-            params['newFlat'] = 'YES'
-        elif q['cycle'] == 'used':
-            params['newFlat'] = 'NO'
+    if 'cycle' in q:
+        if q['cycle'] != 'all':
+            if q['cycle'] == 'new':
+                params['newFlat'] = 'YES'
+            elif q['cycle'] == 'used':
+                params['newFlat'] = 'NO'
 
     # указатель срока аренды
-    if q['period'] is not None:
-        if q['period'] == 'days':
-            params['rentTime'] = 'SHORT'
+    if 'period' in q:
+        if q['period'] is not None:
+            if q['period'] == 'days':
+                params['rentTime'] = 'SHORT'
 
     # фильтр площади
-    if q['square'] is not None:
-        params['areaMin'] = q['square'][0]
-        if len(q['square']) > 1:
-            params['areaMax'] = q['square'][1]
+    if 'square' in q:
+        if q['square'] is not None:
+            params['areaMin'] = q['square'][0]
+            if len(q['square']) > 1:
+                params['areaMax'] = q['square'][1]
 
     # фильтр количества комнат
-    if q['room_count'] is not None:
-        if type_obj != 'suburban':
-            rc = {
-                'studio': 'STUDIO',
-                '1': '1',
-                '2': '2',
-                '3': '3',
-                '4': 'PLUS_4',
-                '5>': 'PLUS_4'
-            }
-            room_count = []
-            for count in q['room_count']:
-                if count != 'clear':
-                    if (type_obj != 'room') and (count != '1'):
+    if 'room_count' in q:
+        if q['room_count'] is not None:
+            if type_obj != 'suburban':
+                rc = {
+                    'studio': 'STUDIO',
+                    '1': '1',
+                    '2': '2',
+                    '3': '3',
+                    '4': 'PLUS_4',
+                    '5>': 'PLUS_4'
+                }
+                room_count = []
+                for count in q['room_count']:
+                    if count != 'clear':
                         room_count.append(rc[count])
-            params['roomsTotal'] = room_count
+                    elif (type_obj != 'room') and (count != '1'):
+                        room_count.append(rc[count])
+                    else:
+                        room_count.append(rc[count])
+                if len(room_count) > 0:
+                    params['roomsTotal'] = room_count
 
     # указатель типа гаража
-    if q['type_garage'] is not None:
-        tg = {
-            'car_place': 'PARKING_PLACE',
-            'garage': 'GARAGE'
-        }
-        type_garage = []
-        for count in q['type_garage']:
-            type_garage.append(tg[count])
-        params['garageType'] = type_garage
+    if 'type_garage' in q:
+        if q['type_garage'] is not None:
+            tg = {
+                'car_place': 'PARKING_PLACE',
+                'garage': 'GARAGE'
+            }
+            type_garage = []
+            for count in q['type_garage']:
+                type_garage.append(tg[count])
+            params['garageType'] = type_garage
 
     # указатель охраны гаража
-    if q['security'] is True:
-        params['includeTag'] = '1794389'
+    if 'security' in q:
+        if q['security'] is True:
+            params['includeTag'] = '1794389'
 
     # тип земли
-    if q['plot_type'] is not None:
-        pt = {
-            'live': 'GARDEN',
-            'farm': 'FARM'
-        }
-        plot_type = []
-        for count in q['plot_type']:
-            if count != 'fabric':
-                plot_type.append(pt[count])
-        params['lotType'] = plot_type
+    if 'plot_type' in q:
+        if q['plot_type'] is not None:
+            pt = {
+                'live': 'GARDEN',
+                'farm': 'FARM'
+            }
+            plot_type = []
+            for count in q['plot_type']:
+                if count != 'fabric':
+                    plot_type.append(pt[count])
+            params['lotType'] = plot_type
 
     # тип ком недвижимости
-    if q['commercial_type'] is not None:
-        ct = {
-            'business': 'BUSINESS_CENTER',
-            'house': 'DETACHED_BUILDING',
-            'mall': 'SHOPPING_CENTER',
-            'government': '',
-            'other': ''
-        }
-        commercial_type = []
-        for ctype in q['plot_type']:
-            if ctype not in ['government', 'other']:
-                commercial_type.append(ct[ctype])
-        params['commercialBuildingType'] = commercial_type
+    if 'commercial_type' in q:
+        if q['commercial_type'] is not None:
+            ct = {
+                'business': 'BUSINESS_CENTER',
+                'house': 'DETACHED_BUILDING',
+                'mall': 'SHOPPING_CENTER',
+                'government': '',
+                'other': ''
+            }
+            commercial_type = []
+            for ctype in q['plot_type']:
+                if ctype not in ['government', 'other']:
+                    commercial_type.append(ct[ctype])
+            params['commercialBuildingType'] = commercial_type
 
     # направление ком недвижимости
-    if q['commercial_sort'] is not None:
-        cs = {
-            'office': 'OFFICE',
-            'free': 'FREE_PURPOSE',
-            'shop-place': 'RETAIL',
-            'storage': 'WAREHOUSE',
-            'fabric': 'MANUFACTURING',
-            'food': 'PUBLIC_CATERING',
-            'hotel': 'HOTEL',
-            'auto-s': 'AUTO_REPAIR'
-        }
-        commercial_sort = []
-        for ctype in q['plot_type']:
-            if ctype not in ['build', 'kwork']:
-                commercial_sort.append(cs[ctype])
-        params['commercialType'] = commercial_sort
+    if 'commercial_sort' in q:
+        if q['commercial_sort'] is not None:
+            cs = {
+                'office': 'OFFICE',
+                'free': 'FREE_PURPOSE',
+                'shop-place': 'RETAIL',
+                'storage': 'WAREHOUSE',
+                'fabric': 'MANUFACTURING',
+                'food': 'PUBLIC_CATERING',
+                'hotel': 'HOTEL',
+                'auto-s': 'AUTO_REPAIR'
+            }
+            commercial_sort = []
+            for ctype in q['plot_type']:
+                if ctype not in ['build', 'kwork']:
+                    commercial_sort.append(cs[ctype])
+            params['commercialType'] = commercial_sort
 
     # выполняем запрос
     response = requests.get(url, params=params, cookies=cookies, headers=headers)

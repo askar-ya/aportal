@@ -269,6 +269,16 @@ class Garage:
         data = get_avito_page(location, refer, '2')
         return data
 
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'type_garage': self.type_garage,
+                                   'security': self.security,
+                                   'price': self.price
+                               })
+        return data
+
 
 class Room:
     def __init__(self, deal: str = 'buy', period: str = None,
@@ -391,6 +401,17 @@ class Room:
         data = get_avito_page(location, refer, '2')
         return data
 
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'period': self.period,
+                                   'room_count': self.room_count,
+                                   'square': self.square,
+                                   'price': self.price
+                               })
+        return data
+
 
 class Plot:
     def __init__(self, deal: str = 'buy', plot_type: list = None, price: list = None):
@@ -458,6 +479,15 @@ class Plot:
             type_obj='plot')
 
         data = get_avito_page(location, refer, '2')
+        return data
+
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'price': self.price,
+                                   'plot_type': self.plot_type
+                               })
         return data
 
 
@@ -582,6 +612,17 @@ class Suburban:
         data = get_avito_page(location, refer, '2')
         return data
 
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'period': self.period,
+                                   'room_count': self.room_count,
+                                   'square': self.square,
+                                   'price': self.price
+                               })
+        return data
+
 
 class Commercial:
     def __init__(self, deal: str = 'buy', square: list = None, commercial_sort: list = None,
@@ -699,4 +740,14 @@ class Commercial:
             type_obj='commercial')
 
         data = get_avito_page(location, refer, '2')
+        return data
+
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'price': self.price,
+                                   'commercial_sort': self.commercial_sort,
+                                   'commercial_type': self.commercial_type
+                               })
         return data

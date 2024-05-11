@@ -6,11 +6,6 @@ from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 
 
-def read_file(name: str):
-    with open(name, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
 def get_avito_filter(location: str, type_obj: str, q: dict) -> str:
     with sync_playwright() as playwright:
         browser = playwright.firefox.launch(headless=True)
@@ -200,7 +195,9 @@ def get_avito_page(location: str, refer: str, page: str = '1'):
         random_tls_extension_order=True
     )
 
-    cookies = read_file('cookies_avito.json')
+    with open('cookies_avito.json', 'r', encoding='utf-8') as f:
+        cookies = json.load(f)
+
     cookies['luri'] = location
 
     headers = {
