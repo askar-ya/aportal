@@ -1,4 +1,5 @@
 from avito import get_avito_filter, get_avito_page
+from yandex import get_yandex_page
 
 
 class Flat:
@@ -158,6 +159,18 @@ class Flat:
             type_obj='flat')
 
         data = get_avito_page(location, refer, '1')
+        return data
+
+    def pars_yandex(self, location) -> list:
+        data = get_yandex_page(location=location, type_obj='flat',
+                               q={
+                                   'deal': self.deal,
+                                   'period': self.period,
+                                   'cycle': self.cycle,
+                                   'room_count': self.room_count,
+                                   'square': self.square,
+                                   'price': self.price
+                               })
         return data
 
 
