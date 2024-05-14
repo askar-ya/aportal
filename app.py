@@ -54,6 +54,11 @@ def request_handler(parameters: dict):
         return str(e)
 
 
+@app.route('/')
+def hellow():
+    return 'select type'
+
+
 @app.route('/avito')
 def avito():
     r = request.json
