@@ -7,13 +7,14 @@ from bs4 import BeautifulSoup
 def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
     with open('cookies_yandex.json', 'r', encoding='utf-8') as f:
         cookies = json.load(f)
-
+    with open('dict_cities.json', 'r', encoding='utf-8') as f:
+        city = json.load(f)[location]['ya']
     headers = {
         'authority': 'realty.ya.ru',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,'
                   '*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ru,en;q=0.9',
-        'referer': f'https://realty.ya.ru/{location}/',
+        'referer': f'https://realty.ya.ru/{city}/',
         'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "YaBrowser";v="24.4", "Yowser";v="2.5"',
         'sec-ch-ua-arch': '"x86"',
         'sec-ch-ua-bitness': '"64"',
@@ -34,9 +35,9 @@ def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
 
     # тип сделки
     if q['deal'] == 'buy':
-        url = f'https://realty.ya.ru/{location}/kupit/'
+        url = f'https://realty.ya.ru/{city}/kupit/'
     else:
-        url = f'https://realty.ya.ru/{location}/snyat/'
+        url = f'https://realty.ya.ru/{city}/snyat/'
 
     # типы объектов яндекс-realty
     ob_d = {

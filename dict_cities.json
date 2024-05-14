@@ -1,0 +1,7 @@
+{
+  "Москва": {"cian": ["www", "1"], "avito":  "moskva", "ya":  "moskva"},
+  "Уфа": {"cian": ["ufa", "176245"], "avito":  "ufa", "ya":  "ufa"},
+  "Казань": {"cian": ["kazan", "4777"], "avito":  "kazan", "ya":  "kazan"},
+  "Санкт-Петербург": {"cian": ["spb", "2"], "avito":  "sankt-peterburg", "ya": "sankt-peterburg"},
+  "Екатеринбург": {"cian": ["ekb", "4743"], "avito":  "ekaterinburg", "ya": "ekaterinburg"}
+}

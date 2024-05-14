@@ -10,9 +10,10 @@ def get_avito_filter(location: str, type_obj: str, q: dict) -> str:
     with sync_playwright() as playwright:
         browser = playwright.firefox.launch(headless=True)
         context = browser.new_context()
-
+        with open('dict_cities.json', 'r', encoding='utf-8') as f:
+            city = json.load(f)[location]['avito']
         page = context.new_page()
-        page.goto(f"https://www.avito.ru/{location}/nedvizhimost")
+        page.goto(f"https://www.avito.ru/{city}/nedvizhimost")
         ts = {
             'room': 'Комната',
             'suburban': 'Дом, дача, коттедж',
@@ -197,15 +198,16 @@ def get_avito_page(location: str, refer: str, page: str = '1'):
 
     with open('cookies_avito.json', 'r', encoding='utf-8') as f:
         cookies = json.load(f)
-
-    cookies['luri'] = location
+    with open('dict_cities.json', 'r', encoding='utf-8') as f:
+        city = json.load(f)[location]['avito']
+    cookies['luri'] = city
 
     headers = {
         'authority': 'www.avito.ru',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/'
                   'avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ru,en;q=0.9',
-        'referer': f'https://www.avito.ru/{location}/nedvizhimost',
+        'referer': f'https://www.avito.ru/{city}/nedvizhimost',
         'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "YaBrowser";v="24.4", "Yowser";v="2.5"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',

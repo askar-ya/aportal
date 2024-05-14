@@ -1,9 +1,9 @@
-from avito import get_avito_filter, get_avito_page
-from yandex import get_yandex_page
+from verify_parms import (deal_verify, period_verify, cycle_verify,
+                          square_verify, room_count_verify, price_verify, type_garage_verify)
 
 
 class Flat:
-    """Класс квартиры авито.
+    """Класс квартиры.
 
     Аттрибуты:
         deal - тип сделки, может быть 'buy' или 'rent'
@@ -43,8 +43,7 @@ class Flat:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -53,11 +52,7 @@ class Flat:
 
     @period.setter
     def period(self, value):
-        if value is not None:
-            if value not in ['days', 'lengthy']:
-                raise ValueError('invalid value in period')
-            elif self.deal == 'buy':
-                raise ValueError('buy > plat does not have a field period')
+        period_verify(value, self.deal)
         self._period = value
 
     @property
@@ -66,10 +61,7 @@ class Flat:
 
     @cycle.setter
     def cycle(self, value):
-        if value not in ['new', 'used', 'all']:
-            raise ValueError('invalid value in cycle')
-        elif (self.deal == 'rent') and (value != 'all'):
-            raise ValueError('rent > plat does not have a field cycle')
+        cycle_verify(value, self.deal)
         self._cycle = value
 
     @property
@@ -78,11 +70,7 @@ class Flat:
 
     @room_count.setter
     def room_count(self, value):
-        if value is not None:
-            value = set(value)
-            for checker in value:
-                if checker not in ['1', '2', '3', '4', '5>', 'studio', 'clear']:
-                    raise ValueError('invalid value in room_count')
+        room_count_verify(value)
         self._room_count = value
 
     @property
@@ -91,30 +79,7 @@ class Flat:
 
     @square.setter
     def square(self, value):
-        if value is not None:
-            square = value
-            if (len(square) > 0) and (len(square) <= 2):
-                first_m = square[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the square element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(square) > 1:
-                    second_m = square[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the square element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second square element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the square element must include a number in string')
-
-            else:
-                raise ValueError('the list square cannot be longer than 2 and not less than 1')
+        square_verify(value)
         self._square = value
 
     @property
@@ -123,55 +88,20 @@ class Flat:
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_form(self):
+        q = {
             'deal': self.deal,
             'period': self.period,
             'cycle': self.cycle,
             'room_count': self.room_count,
             'square': self.square,
-            'price': self.price},
-            type_obj='flat')
-
-        data = get_avito_page(location, refer, '1')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'period': self.period,
-                                   'cycle': self.cycle,
-                                   'room_count': self.room_count,
-                                   'square': self.square,
-                                   'price': self.price
-                               })
-        return data
+            'price': self.price,
+            'object_type': 'flat'
+        }
+        return q
 
 
 class Garage:
@@ -202,8 +132,7 @@ class Garage:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -212,9 +141,7 @@ class Garage:
 
     @type_garage.setter
     def type_garage(self, value):
-        if value is not None:
-            if value not in ['car_place', 'garage']:
-                raise ValueError('invalid value in garage_type')
+        type_garage_verify(value)
         self._type_garage = value
 
     @property
@@ -233,54 +160,41 @@ class Garage:
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_form(self):
+        q = {
             'deal': self.deal,
             'type_garage': self.type_garage,
             'security': self.security,
-            'price': self.price},
-            type_obj='garage')
-
-        data = get_avito_page(location, refer, '2')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'type_garage': self.type_garage,
-                                   'security': self.security,
-                                   'price': self.price
-                               })
-        return data
+            'price': self.price,
+            'object_type': 'garage'
+        }
+        return q
 
 
 class Room:
+    """Класс комнаты.
+
+        Аттрибуты:
+            deal - тип сделки, может быть 'buy' или 'rent'
+                   по умолчанию 'buy'
+            period - период аренды, может быть 'days' или 'lengthy'
+                     Не может быть задан, если тип сделки 'buy'
+                     по умолчанию None
+            room_count - кол-во комнат, должны быть list
+                         элементы могут быть равны - '1', '2', '3', '4', '5>', 'studio', 'clear'
+                         по умолчанию None
+            square - площадь квартиры, должна быть list и длиной 1 или 2
+                     элементы должны быть str и содержать только цифры
+                     первый элемент минимальная площадь, второй максимальная
+                     по умолчанию None
+            price - цена квартиры, должна быть list и длиной 1 или 2
+                     элементы должны быть str и содержать только цифры
+                     первый элемент минимальная цена, вторая максимальная
+                     по умолчанию None
+        """
     def __init__(self, deal: str = 'buy', period: str = None,
                  room_count: list = None, square: list = None, price: list = None):
 
@@ -296,8 +210,7 @@ class Room:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -306,11 +219,7 @@ class Room:
 
     @period.setter
     def period(self, value):
-        if value is not None:
-            if value not in ['days', 'lengthy']:
-                raise ValueError('invalid value in period')
-            elif self.deal == 'buy':
-                raise ValueError('buy > plat does not have a field period')
+        period_verify(value, self.deal)
         self._period = value
 
     @property
@@ -319,11 +228,7 @@ class Room:
 
     @room_count.setter
     def room_count(self, value):
-        if value is not None:
-            value = set(value)
-            for checker in value:
-                if checker not in ['1', '2', '3', '4', '5>', 'clear']:
-                    raise ValueError('invalid value in room_count')
+        room_count_verify(value)
         self._room_count = value
 
     @property
@@ -332,30 +237,7 @@ class Room:
 
     @square.setter
     def square(self, value):
-        if value is not None:
-            square = value
-            if (len(square) > 0) and (len(square) <= 2):
-                first_m = square[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the square element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(square) > 1:
-                    second_m = square[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the square element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second square element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the square element must include a number in string')
-
-            else:
-                raise ValueError('the list square cannot be longer than 2 and not less than 1')
+        square_verify(value)
         self._square = value
 
     @property
@@ -364,59 +246,26 @@ class Room:
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_form(self):
+        q = {
             'deal': self.deal,
             'period': self.period,
             'room_count': self.room_count,
             'square': self.square,
-            'price': self.price},
-            type_obj='room')
-
-        data = get_avito_page(location, refer, '2')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'period': self.period,
-                                   'room_count': self.room_count,
-                                   'square': self.square,
-                                   'price': self.price
-                               })
-        return data
+            'price': self.price,
+            'object_type': 'room'}
+        return q
 
 
 class Plot:
-    def __init__(self, deal: str = 'buy', plot_type: list = None, price: list = None):
+    def __init__(self, deal: str = 'buy', plot_type: list = None, square: list = None, price: list = None):
+
         self.deal = deal
         self.plot_type = plot_type
+        self.square = square
         self.price = price
 
     @property
@@ -425,8 +274,7 @@ class Plot:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -441,54 +289,31 @@ class Plot:
         self._plot_type = value
 
     @property
+    def square(self):
+        return self._square
+
+    @square.setter
+    def square(self, value):
+        square_verify(value)
+        self._square = value
+
+    @property
     def price(self):
         return self._price
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_form(self):
+        q = {
             'deal': self.deal,
             'price': self.price,
-            'plot_type': self.plot_type},
-            type_obj='plot')
-
-        data = get_avito_page(location, refer, '2')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'price': self.price,
-                                   'plot_type': self.plot_type
-                               })
-        return data
+            'plot_type': self.plot_type,
+            'object_type': 'plot'
+        }
+        return q
 
 
 class Suburban:
@@ -507,8 +332,7 @@ class Suburban:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -517,11 +341,7 @@ class Suburban:
 
     @period.setter
     def period(self, value):
-        if value is not None:
-            if value not in ['days', 'lengthy']:
-                raise ValueError('invalid value in period')
-            elif self.deal == 'buy':
-                raise ValueError('buy > plat does not have a field period')
+        period_verify(value, self.deal)
         self._period = value
 
     @property
@@ -530,11 +350,7 @@ class Suburban:
 
     @room_count.setter
     def room_count(self, value):
-        if value is not None:
-            value = set(value)
-            for checker in value:
-                if checker not in ['1', '2', '3', '4', '5>', 'clear']:
-                    raise ValueError('invalid value in room_count')
+        room_count_verify(value)
         self._room_count = value
 
     @property
@@ -543,30 +359,7 @@ class Suburban:
 
     @square.setter
     def square(self, value):
-        if value is not None:
-            square = value
-            if (len(square) > 0) and (len(square) <= 2):
-                first_m = square[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the square element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(square) > 1:
-                    second_m = square[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the square element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second square element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the square element must include a number in string')
-
-            else:
-                raise ValueError('the list square cannot be longer than 2 and not less than 1')
+        square_verify(value)
         self._square = value
 
     @property
@@ -575,53 +368,19 @@ class Suburban:
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_from(self):
+        q = {
             'deal': self.deal,
             'period': self.period,
             'room_count': self.room_count,
             'square': self.square,
-            'price': self.price},
-            type_obj='suburban')
-
-        data = get_avito_page(location, refer, '2')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'period': self.period,
-                                   'room_count': self.room_count,
-                                   'square': self.square,
-                                   'price': self.price
-                               })
-        return data
+            'price': self.price,
+            'object_type': 'suburban'
+        }
+        return q
 
 
 class Commercial:
@@ -639,8 +398,7 @@ class Commercial:
 
     @deal.setter
     def deal(self, value):
-        if value not in ['buy', 'rent']:
-            raise ValueError('invalid value in deal')
+        deal_verify(value)
         self._deal = value
 
     @property
@@ -649,30 +407,7 @@ class Commercial:
 
     @square.setter
     def square(self, value):
-        if value is not None:
-            square = value
-            if (len(square) > 0) and (len(square) <= 2):
-                first_m = square[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the square element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(square) > 1:
-                    second_m = square[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the square element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second square element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the square element must include a number in string')
-
-            else:
-                raise ValueError('the list square cannot be longer than 2 and not less than 1')
+        square_verify(value)
         self._square = value
 
     @property
@@ -706,48 +441,14 @@ class Commercial:
 
     @price.setter
     def price(self, value):
-        if value is not None:
-            price = value
-            if (len(price) > 0) and (len(price) <= 2):
-                first_m = price[0]
-                try:
-                    first_m = int(first_m)
-                    if first_m < 0:
-                        raise ValueError('the price element cannot be negative')
-                except ValueError:
-                    raise ValueError('the square element must include a number in string')
-
-                if len(price) > 1:
-                    second_m = price[1]
-                    try:
-                        second_m = int(second_m)
-                        if second_m < 0:
-                            raise ValueError('the price element cannot be negative')
-                        elif second_m < first_m:
-                            raise ValueError('second price element cannot be less than first_m')
-                    except ValueError:
-                        raise ValueError('the price element must include a number in string')
-            else:
-                raise ValueError('the list price cannot be longer than 2 and not less than 1')
+        price_verify(value)
         self._price = value
 
-    def pars_avito(self, location):
-        refer = get_avito_filter(location=location, q={
+    def to_form(self):
+        q = {
             'deal': self.deal,
             'price': self.price,
             'commercial_sort': self.commercial_sort,
-            'commercial_type': self.commercial_type},
-            type_obj='commercial')
-
-        data = get_avito_page(location, refer, '2')
-        return data
-
-    def pars_yandex(self, location) -> list:
-        data = get_yandex_page(location=location, type_obj='flat',
-                               q={
-                                   'deal': self.deal,
-                                   'price': self.price,
-                                   'commercial_sort': self.commercial_sort,
-                                   'commercial_type': self.commercial_type
-                               })
-        return data
+            'commercial_type': self.commercial_type,
+            'object_type': 'commercial'}
+        return q

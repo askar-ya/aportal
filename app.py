@@ -1,6 +1,9 @@
-from models import Flat, Room, Suburban, Garage, Commercial, Plot
-
 from flask import Flask, request
+from models import Flat, Room, Suburban, Garage, Commercial, Plot
+from avito import get_avito_filter, get_avito_page
+from yandex import get_yandex_page
+from cian import get_cian_page
+
 
 app = Flask(__name__)
 
@@ -60,7 +63,10 @@ def avito():
         location = 'all'
     search_object = request_handler(r)
     if type(search_object) is not str:
-        return search_object.pars_avito(location)
+        q = search_object.to_form()
+        filter_ = get_avito_filter(location, q['object_type'], q)
+        data = get_avito_page(location, filter_)
+        return data
     else:
         return search_object
 
@@ -74,7 +80,25 @@ def yandex():
         location = 'all'
     search_object = request_handler(r)
     if type(search_object) is not str:
-        return search_object.pars_yandex(location)
+        q = search_object.to_form()
+        data = get_yandex_page(location, q['object_type'], q)
+        return data
+    else:
+        return search_object
+
+
+@app.route('/cian')
+def cian():
+    r = request.json
+    if 'location' in r:
+        location = r['location']
+    else:
+        location = 'all'
+    search_object = request_handler(r)
+    if type(search_object) is not str:
+        q = search_object.to_form()
+        data = get_cian_page(location, q['object_type'], q)
+        return data
     else:
         return search_object
 
