@@ -8,13 +8,14 @@ def get_cian_page(location: str, type_obj: str, q: dict):
         cookies = json.load(f)
     with open('dict_cities.json', 'r', encoding='utf-8') as f:
         city = json.load(f)[location]['cian']
+    print(city)
     headers = {
         'authority': 'spb.cian.ru',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/'
                   'webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ru,en;q=0.9',
         'cache-control': 'max-age=0',
-        'referer': f'https://{city[0]}.cian.ru/',
+        'referer': f'https://{city['sub']}.cian.ru/',
         'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "YaBrowser";v="24.4", "Yowser";v="2.5"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
@@ -30,7 +31,7 @@ def get_cian_page(location: str, type_obj: str, q: dict):
     params = {
         'currency': '2',
         'engine_version': '2',
-        'region': city[1]
+        'region': city['reg']
     }
 
     # тип сделки
@@ -129,8 +130,8 @@ def get_cian_page(location: str, type_obj: str, q: dict):
             if len(q['square']) > 1:
                 params['maxarea'] = q['square'][1]
 
-    response = requests.get(f'https://{city[0]}.cian.ru/cat.php',
-                            params=params, cookies=cookies, headers=headers)
+    response = requests.get(f'https://{city['sub']}.cian.ru/cat.php',
+                            params=params,  headers=headers, cookies=cookies)
 
     soup = BeautifulSoup(response.text, 'lxml')
 
@@ -150,3 +151,4 @@ def get_cian_page(location: str, type_obj: str, q: dict):
                'url': url, 'img': pictures}
         data.append(out)
     return data
+

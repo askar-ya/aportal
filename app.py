@@ -1,6 +1,6 @@
 from flask import Flask, request
 from models import Flat, Room, Suburban, Garage, Commercial, Plot
-from avito import get_avito_filter, get_avito_page
+from ya import get_avito_filter, get_avito_page
 from yandex import get_yandex_page
 from cian import get_cian_page
 

@@ -8,7 +8,7 @@ def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
     with open('cookies_yandex.json', 'r', encoding='utf-8') as f:
         cookies = json.load(f)
     with open('dict_cities.json', 'r', encoding='utf-8') as f:
-        city = json.load(f)[location]['ya']
+        city = json.load(f)[location]['yandex']
     headers = {
         'authority': 'realty.ya.ru',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,'
@@ -35,9 +35,9 @@ def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
 
     # тип сделки
     if q['deal'] == 'buy':
-        url = f'https://realty.ya.ru/{city}/kupit/'
+        url = f'https://realty.ya.ru/{city['sub']}/kupit/'
     else:
-        url = f'https://realty.ya.ru/{city}/snyat/'
+        url = f'https://realty.ya.ru/{city['sub']}/snyat/'
 
     # типы объектов яндекс-realty
     ob_d = {
@@ -53,7 +53,9 @@ def get_yandex_page(location: str, type_obj: str, q: dict) -> list:
     url += ob_d[type_obj]
 
     # создаем словарь параметров
-    params = {}
+    params = {
+        'rgid': city['rgid']
+    }
 
     # фильтр цены
     if q['price'] is not None:
