@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 def get_avito_filter(location: str, type_obj: str, q: dict) -> str:
     with sync_playwright() as playwright:
-        browser = playwright.firefox.launch(headless=True)
+        browser = playwright.firefox.launch(headless=False)
         context = browser.new_context()
         with open('dict_cities.json', 'r', encoding='utf-8') as f:
             city = json.load(f)[location]['avito']
@@ -52,7 +52,7 @@ def get_avito_filter(location: str, type_obj: str, q: dict) -> str:
 
         f = 0
         if q['price'] is not None:
-            page.get_by_text("Цена", exact=True).click()
+            page.get_by_text("Цена", exact=False).click()
             if 'period' in q:
                 if q['period'] != 'days':
                     if q['price'][0] != '0':
@@ -178,10 +178,10 @@ def get_avito_filter(location: str, type_obj: str, q: dict) -> str:
                 for check in q['commercial_type']:
                     page.get_by_text(ct[check], exact=True).click()
 
-        page.wait_for_selector('.desktop-8ji0mf')
-        page.query_selector('.desktop-8ji0mf').click()
+        page.wait_for_selector(".styles-module-root-WBmfm")
+        page.query_selector('.styles-module-root-WBmfm').query_selector('button').click()
         url = page.url
-        print(url)
+
         # ---------------------
         context.close()
         browser.close()

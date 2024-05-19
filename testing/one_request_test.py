@@ -1,7 +1,7 @@
 import requests
 
 
-r = requests.get('http://yap-place.ru/cian',
+r = requests.get('http://176.9.3.252/avito',
                  json={
                      "type": "flat",
                      "deal": "buy",
